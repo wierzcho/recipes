@@ -48,7 +48,9 @@ class PublicUsersApiTests(TestCase):
         }
         res = self.client.post(CREATE_USER_URL, credentials)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        user_exists = get_user_model().objects.filter(email=credentials['email']).exists()
+        user_exists = get_user_model().objects \
+            .filter(email=credentials['email']) \
+            .exists()
 
         self.assertFalse(user_exists)
 
@@ -61,7 +63,7 @@ class PublicUsersApiTests(TestCase):
         res = self.client.post(TOKEN_URL, credentials)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertIn(res.data, 'token')
+        self.assertIn('token', res.data)
 
     def test_create_token_invalid_credentials(self):
         credentials = {
@@ -71,7 +73,7 @@ class PublicUsersApiTests(TestCase):
 
         res = self.client.post(TOKEN_URL, credentials)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertNotIn(res.data, 'token')
+        self.assertNotIn('token', res.data)
 
     def test_create_token_no_user(self):
         credentials = {
@@ -81,9 +83,10 @@ class PublicUsersApiTests(TestCase):
 
         res = self.client.post(TOKEN_URL, credentials)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertNotIn(res.data, 'token')
 
     def test_create_token_blank_password(self):
-        res = self.client.post(TOKEN_URL, {"email": "asd@asd.pl", "password": ""})
+        res = self.client.post(
+            TOKEN_URL, {"email": "asd@asd.pl", "password": ""}
+        )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertNotIn(res.data, 'token')
+        self.assertNotIn('token', res.data)

@@ -5,5 +5,5 @@ from user import views
 app_name = "user"
 urlpatterns = [
     path("create/", views.CreateUserView.as_view(), name="create"),
-    path("token/", None, name="token"),
+    path("token/", views.GenerateTokenView.as_view(), name="token"),
 ]
