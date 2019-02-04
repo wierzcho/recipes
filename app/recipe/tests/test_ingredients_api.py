@@ -63,3 +63,19 @@ class PrivateRecipesAPiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertFalse(should_not_exist)
         self.assertEqual(res.data[0]['name'], mine_ingredient1.name)
+
+    def test_add_ingredient_successful(self):
+        payload = {"name": "test1234", }
+
+        res = self.client.post(INGREDIENTS_URL, payload)
+        exists = Ingredient.objects.filter(name=payload['name']).exists()
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(exists)
+
+    def test_add_ingredient_not_successful(self):
+        payload = {"name": ""}
+
+        res = self.client.post(INGREDIENTS_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
