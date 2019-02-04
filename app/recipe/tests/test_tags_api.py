@@ -57,3 +57,27 @@ class PrivateTagAPITests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
+
+    def test_create_tags_successfully(self):
+        payload = {
+            'name': 'newly added'
+        }
+
+        self.client.post(TAGS_URL, payload)
+
+        exists = Tag.objects.filter(
+            user=self.user,
+            name=payload['name'],
+        ).exists()
+
+        self.assertTrue(exists)
+
+    def test_create_tag_invalid(self):
+        payload = {
+            "name": ""
+        }
+
+        res = self.client.post(TAGS_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
