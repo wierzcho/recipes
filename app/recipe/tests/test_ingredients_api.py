@@ -37,7 +37,8 @@ class PrivateRecipesAPiTests(TestCase):
         Ingredient.objects.create(name="ingredient2", user=self.user)
         all_ingredients = Ingredient.objects.all()
 
-        ingredients_serialized = IngredientSerializer(all_ingredients, many=True)
+        ingredients_serialized = IngredientSerializer(all_ingredients,
+                                                      many=True, )
         res = self.client.get(INGREDIENTS_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -48,15 +49,20 @@ class PrivateRecipesAPiTests(TestCase):
             email="adasdasdasdasd@asdasdasd.pl",
             password="halohalohalhaohlaho",
         )
-        mine_ingredient1 = Ingredient.objects.create(name="ingredient1", user=self.user)
-        mine_ingredient2 = Ingredient.objects.create(name="ingredient2", user=self.user)
-        not_mine_ingredient = Ingredient.objects.create(name="ingredient3", user=user2)
+        mine_ingredient1 = Ingredient.objects.create(name="ingredient1",
+                                                     user=self.user)
+        mine_ingredient2 = Ingredient.objects.create(name="ingredient2",
+                                                     user=self.user)
+        not_mine_ingredient = Ingredient.objects.create(name="ingredient3",
+                                                        user=user2)
 
         logged_in_users_ingredients = Ingredient.objects.filter(
             user=self.user,
         ).order_by('-name')
 
-        should_not_exist = logged_in_users_ingredients.filter(user=user2).exists()
+        should_not_exist = logged_in_users_ingredients \
+            .filter(user=user2) \
+            .exists()
 
         res = self.client.get(INGREDIENTS_URL)
 
@@ -75,7 +81,6 @@ class PrivateRecipesAPiTests(TestCase):
 
     def test_add_ingredient_not_successful(self):
         payload = {"name": ""}
-
         res = self.client.post(INGREDIENTS_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
