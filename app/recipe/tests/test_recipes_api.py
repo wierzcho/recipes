@@ -130,3 +130,20 @@ class PrivateRecipesApiTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertIn(ingredient1, ingredients)
         self.assertIn(ingredient2, ingredients)
+
+    def test_update_basic_recipe(self):
+        recipe = sample_recipe(user=self.user)
+        payload = {
+            'title': 'titchanged',
+            'time_minutes': 100,
+            'price': 1.00,
+        }
+
+        url = detail_url_generator(recipe.id)
+        self.client.patch(url, payload)
+
+        recipe.refresh_from_db()
+
+        self.assertEqual(recipe.title, payload['title'])
+        self.assertEqual(recipe.time_minutes, payload['time_minutes'])
+        self.assertEqual(recipe.price, payload['price'])
